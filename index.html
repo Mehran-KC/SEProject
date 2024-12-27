@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منو</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://kit.fontawesome.com/94ca6db591.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul id="nav-stat">
+                <li><a href="#" id="login-btn">ورود</a></li>
+            </ul>
+            <ul id="nav-menu">
+                <li>
+                    <a href="#espresso">
+                        <img src="./assets/img/icon-default.png" alt="Espresso" class="nav-icon">
+                        اسپرسو
+                    </a>
+                </li>
+                <li>
+                    <a href="#hot-drinks">
+                        <img src="./assets/img/icon-beverage.png" alt="Hot Drink" class="nav-icon">
+                        نوشیدنی گرم
+                    </a>
+                </li>
+                <li>
+                    <a href="#cold-drinks">
+                        <img src="./assets/img/icon-khoresht.png" alt="Cold Drink" class="nav-icon">
+                        نوشیدنی سرد
+                    </a>
+                </li>
+                <li>
+                    <a href="#americano">
+                        <img src="./assets/img/icon-default.png" alt="Americano" class="nav-icon">
+                        یچیزی
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="menu-section" id="espresso">
+            <h2>اسپرسو</h2>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <img src="./assets/img/1.jpg" alt="Espresso">
+                    <div class="detail">
+                        <h3>اسپرسو</h3>
+                        <p class="price">10,000 تومان</p>
+                    </div>
+                    <button class="add-to-cart">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="menu-section" id="hot-drinks">
+            <h2>نوشیدنی گرم</h2>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <img src="./assets/img/3.jpg" alt="Hot Drink">
+                    <div class="detail">
+                        <h3>نوشیدنی گرم</h3>
+                        <p class="price">11,000 تومان</p>
+                    </div>
+                    <button class="add-to-cart">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="menu-section" id="cold-drinks">
+            <h2>نوشیدنی سرد</h2>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <img src="./assets/img/2.jpg" alt="Cold Drink">
+                    <div class="detail">
+                        <h3>نوشیدنی سرد</h3>
+                        <p class="price">11,000 تومان</p>
+                    </div>
+                    <button class="add-to-cart">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section class="menu-section" id="americano">
+            <h2>یچیزی</h2>
+            <div class="menu-items">
+                <div class="menu-item sold-out">
+                    <img src="./assets/img/5.jpg" alt="Americano">
+                    <div class="detail">
+                        <h3>یچیزی ا</h3>
+                        <p class="price">12,000 تومان</p>
+                    </div>
+                    <button class="add-to-cart">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="login-modal" class="modal auth-modal">
+        <div class="modal-content auth-modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="auth-header">
+                <h2>ورود به حساب کاربری</h2>
+            </div>
+            <form id="phone-form" class="auth-form">
+                <div class="form-group">
+                    <label for="login-phone">شماره تلفن</label>
+                    <div class="input-wrapper">
+                        <i class="fa fa-phone"></i>
+                        <input type="tel" id="login-phone" name="phone" placeholder="شماره تلفن خود را وارد کنید" required>
+                    </div>
+                </div>
+                <button type="button" id="next-btn" class="auth-btn">بعدی</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="verify-modal" class="modal auth-modal">
+        <div class="modal-content auth-modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="auth-header">
+                <h2>کد تایید</h2>
+            </div>
+            <form id="verify-form" class="auth-form">
+                <div class="verification-code-container">
+                    <input type="text" class="verify-input" maxlength="1">
+                    <input type="text" class="verify-input" maxlength="1">
+                    <input type="text" class="verify-input" maxlength="1">
+                    <input type="text" class="verify-input" maxlength="1">
+                    <input type="text" class="verify-input" maxlength="1">
+                </div>
+                <button type="submit" class="auth-btn">تایید</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="profile-completion-modal" class="modal auth-modal">
+        <div class="modal-content auth-modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="auth-header">
+                <h2>تکمیل اطلاعات کاربری</h2>
+                <p>لطفاً اطلاعات خود را تکمیل کنید</p>
+            </div>
+            <form id="profile-completion-form" class="auth-form">
+                <div class="form-group">
+                    <label for="full-name">نام و نام خانوادگی</label>
+                    <div class="input-wrapper">
+                        <i class="fa fa-user"></i>
+                        <input type="text" id="full-name" name="fullName" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="email">ایمیل (اختیاری)</label>
+                    <div class="input-wrapper">
+                        <i class="fa fa-envelope"></i>
+                        <input type="email" id="email" name="email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="birth-date">تاریخ تولد</label>
+                    <div class="input-wrapper">
+                        <i class="fa fa-calendar"></i>
+                        <input type="date" id="birth-date" name="birthDate" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="address">آدرس</label>
+                    <div class="input-wrapper">
+                        <i class="fa fa-map-marker"></i>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                </div>
+                <button type="submit" class="auth-btn">ذخیره اطلاعات</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="food-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal" class="close">&times;</span>
+            <div id="modal-body">
+            </div>
+            <div class="quantity-controller">
+                <button id="decrease-btn" class="circle-btn">-</button>
+                <span id="quantity">1</span>
+                <button id="increase-btn" class="circle-btn">+</button>
+            </div>
+            <button id="add-to-cart-modal" class="add-to-cart-modal">افزودن به سبد خرید</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
