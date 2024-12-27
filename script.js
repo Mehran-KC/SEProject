@@ -2,7 +2,6 @@ const RESEND_DELAY = 60;
 const VERIFICATION_CODE_LENGTH = 5;
 const PHONE_REGEX = /^09\d{9}$/;
 
- Authentication state management
 const authState = {
     phone: null,
     verificationId: null,
@@ -12,6 +11,7 @@ const authState = {
 
 document.addEventListener("DOMContentLoaded", () => {
     const loginModal = document.getElementById("login-modal");
+    const signupModal = document.getElementById("profile-completion-modal");
     const verifyModal = document.getElementById("verify-modal");
     const loginBtn = document.getElementById("login-btn");
     const nextBtn = document.getElementById("next-btn");
@@ -145,7 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 icon: "error",
                 title: "خطا",
                 text: "لطفاً شماره تلفن معتبر وارد کنید",
-                confirmButtonText: "باشه"
             });
             return;
         }
@@ -163,7 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 icon: "error",
                 title: "خطا",
                 text: "خطا در ارسال کد تایید. لطفاً دوباره تلاش کنید.",
-                confirmButtonText: "باشه"
             });
         }
     }
@@ -180,7 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 icon: "success",
                 title: "تایید موفقیت‌آمیز",
                 text: "به حساب کاربری خود خوش آمدید",
-                confirmButtonText: "باشه"
             });
             
             handleModalVisibility(verifyModal, false);
@@ -192,7 +189,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 icon: "error",
                 title: "خطا",
                 text: "کد تایید نادرست است. لطفاً دوباره تلاش کنید.",
-                confirmButtonText: "باشه"
             });
         } finally {
             authState.isVerifying = false;
@@ -218,7 +214,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 icon: "success",
                 title: "ارسال مجدد",
                 text: "کد تایید جدید ارسال شد",
-                confirmButtonText: "باشه"
             });
             
             setupVerificationInputs();
@@ -228,7 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 icon: "error",
                 title: "خطا",
                 text: "خطا در ارسال مجدد کد. لطفاً دوباره تلاش کنید.",
-                confirmButtonText: "باشه"
             });
         }
     });
@@ -257,28 +251,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
 
-    function closeModal(modal) {
-        modal.classList.remove("show");
-        setTimeout(() => {
-            modal.style.display = "none";
-        }, 300);
-    }
-
-    function openLoginModal() {
-        if (!loginModal) {
-            console.error("Login modal element not found.");
-            return;
-        }
-        loginModal.style.display = "flex";
-        loginModal.classList.add("show");
-    }
-
-    
-
-
     window.addEventListener("click", (event) => {
         if (event.target.classList.contains("modal")) {
-            closeModal(event.target);
+            closeModalHandler();
         }
     });
 
@@ -292,23 +267,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const productDetails = {
         'اسپرسو': {
-            description: 'اسپرسو نوشیدنی کلاسیک ایتالیایی با تمرکز بر عصاره خالص قهوه',
+            description: 'میخوای بیدار بمونی؟\nهمینو بگیر',
             customization: {
                 'نوع دانه': [
                     { name: 'عربیکا برزیل', price: 0 },
                     { name: 'روبوستا ویتنام', price: 2000 },
                     { name: 'میکس خاص', price: 5000 }
-                ],
-                'سایز': [
-                    { name: 'کوچک', price: 0 },
-                    { name: 'متوسط', price: 3000 },
-                    { name: 'بزرگ', price: 6000 }
                 ]
-            },
-            details: {
-                کالری: '3 کالری',
-                'مقدار کافئین': '63 میلی‌گرم',
-                'دمای مناسب': '90-96 درجه سانتیگراد'
             },
             basePrice: 10000,
             gallery: [
@@ -321,7 +286,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let quantity = 1;
     let currentProductGallery = [];
-    let currentGalleryIndex = 0;
     let currentProductCustomization = {};
     let currentBasePrice = 0;
 
@@ -375,7 +339,6 @@ document.addEventListener("DOMContentLoaded", () => {
             `).join('');
 
         currentProductGallery = productInfo.gallery;
-        currentGalleryIndex = 0;
 
         modalBody.innerHTML = `
             <div class="modal-product-gallery">
@@ -503,11 +466,10 @@ document.addEventListener("DOMContentLoaded", () => {
         Toast.fire({
             icon: 'success',
             title: 'افزودن به سبد خرید',
-            text: `${quantity} عدد ${itemName} با مشخصات: ${customizationDetails}به مبلغ ${totalPrice.toLocaleString()} تومان به سبد خرید اضافه شد.`,
-            confirmButtonText: 'باشه'
+            text: `${quantity} عدد ${itemName} به سبد خرید اضافه شد.`,
         });
 
-        modal.style.display = 'none';
+        closeModalHandler()
     });
 
     closeModall.addEventListener("click", closeModalHandler);
@@ -517,13 +479,139 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    window.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && modal.classList.contains('show')) {
-            closeModalHandler();
-        }
-    });
-
     document.querySelectorAll(".menu-item").forEach((item) => {
         item.addEventListener("click", () => openModal(item));
+    });
+    let cartItems = [];
+const cartCount = document.querySelector('.cart-count');
+
+addToCartModal.addEventListener('click', () => {
+    let customizationDetails = '';
+    Object.entries(currentProductCustomization).forEach(([category, option]) => {
+        customizationDetails += `${category}: ${option.name}, `;
+    });
+
+    const itemName = document.querySelector('.modal-body-content h3').innerText;
+    const totalPrice = parseInt(
+        document.querySelector('.modal-price')
+        .innerText.replace(/[^0-9]/g, '')
+    );
+
+    cartItems.push({
+        name: itemName,
+        quantity: quantity,
+        price: totalPrice,
+        customization: currentProductCustomization
+    });
+
+    cartCount.textContent = cartItems.length;
+
+    Toast.fire({
+        icon: 'success',
+        title: 'افزودن به سبد خرید',
+        text: `${quantity} عدد ${itemName} به سبد خرید اضافه شد.`,
+        confirmButtonText: 'باشه'
+    });
+
+    modal.style.display = 'none';
+});
+
+
+
+     const cartModal = document.getElementById("cart-modal");
+    const cartBtn = document.getElementById("cart-btn");
+    const cartItemsContainer = document.querySelector(".cart-items-container");
+    const totalAmount = document.querySelector(".total-amount");
+    const checkoutBtn = document.getElementById("checkout-btn");
+
+    cartBtn.addEventListener("click", openCartModal);
+
+    function openCartModal() {
+        updateCartDisplay();
+        handleModalVisibility(cartModal, true);
+    }
+
+    function updateCartDisplay() {
+        if (cartItems.length === 0) {
+            cartItemsContainer.innerHTML = '<div class="empty-cart-message">سبد خرید شما خالی است</div>';
+            totalAmount.textContent = '0 تومان';
+            return;
+        }
+
+        let total = 0;
+        cartItemsContainer.innerHTML = cartItems.map((item, index) => {
+            total += item.price * item.quantity;
+            
+            const customizationHtml = Object.entries(item.customization || {})
+                .map(([category, option]) => `${category}: ${option.name}`)
+                .join('، ');
+
+            return `
+                <div class="cart-item">
+                    <img src="./assets/img/1.jpg" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.name}</div>
+                        ${customizationHtml ? `<div class="cart-item-customization">${customizationHtml}</div>` : ''}
+                        <div class="cart-item-price">${(item.price * item.quantity).toLocaleString()} تومان</div>
+                    </div>
+                    <div class="cart-item-controls">
+                        <div class="cart-quantity-control">
+                            <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, -1)">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, 1)">+</button>
+                        </div>
+                        <button class="remove-item-btn" onclick="removeCartItem(${index})">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        totalAmount.textContent = `${total.toLocaleString()} تومان`;
+    }
+
+    window.updateCartItemQuantity = function(index, change) {
+        const item = cartItems[index];
+        const newQuantity = item.quantity + change;
+        
+        if (newQuantity < 1) return;
+        
+        item.quantity = newQuantity;
+        updateCartDisplay();
+        cartCount.textContent = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+    window.removeCartItem = function(index) {
+        cartItems.splice(index, 1);
+        updateCartDisplay();
+        cartCount.textContent = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+        
+        if (cartItems.length === 0) {
+            handleModalVisibility(cartModal, false);
+        }
+    }
+
+    checkoutBtn.addEventListener("click", () => {
+        if (cartItems.length === 0) {
+            Toast.fire({
+                icon: 'error',
+                title: 'خطا',
+                text: 'سبد خرید شما خالی است',
+                confirmButtonText: 'باشه'
+            });
+            return;
+        }
+        
+        Toast.fire({
+            icon: 'success',
+            title: 'تکمیل خرید',
+            text: 'سفارش شما با موفقیت ثبت شد',
+            confirmButtonText: 'باشه'
+        });
+        
+        cartItems = [];
+        cartCount.textContent = "0";
+        handleModalVisibility(cartModal, false);
     });
 });
