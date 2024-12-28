@@ -482,29 +482,43 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".menu-item").forEach((item) => {
         item.addEventListener("click", () => openModal(item));
     });
+    
     let cartItems = [];
 const cartCount = document.querySelector('.cart-count');
 
 addToCartModal.addEventListener('click', () => {
-    let customizationDetails = '';
+    let customizationDetails = {};
     Object.entries(currentProductCustomization).forEach(([category, option]) => {
-        customizationDetails += `${category}: ${option.name}, `;
+        customizationDetails[category] = option;
     });
 
     const itemName = document.querySelector('.modal-body-content h3').innerText;
-    const totalPrice = parseInt(
+    const itemPrice = parseInt(
         document.querySelector('.modal-price')
         .innerText.replace(/[^0-9]/g, '')
     );
 
-    cartItems.push({
-        name: itemName,
-        quantity: quantity,
-        price: totalPrice,
-        customization: currentProductCustomization
-    });
+    // Check if the item already exists in the cart
+    const existingItemIndex = cartItems.findIndex(item => 
+        item.name === itemName &&
+        JSON.stringify(item.customization) === JSON.stringify(customizationDetails)
+    );
 
-    cartCount.textContent = cartItems.length;
+    if (existingItemIndex > -1) {
+        // If the item exists, update the quantity
+        cartItems[existingItemIndex].quantity += quantity;
+    } else {
+        // If the item does not exist, add it as a new entry
+        cartItems.push({
+            name: itemName,
+            quantity: quantity,
+            price: itemPrice,
+            customization: customizationDetails
+        });
+    }
+
+    // Update the cart count
+    cartCount.textContent = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
     Toast.fire({
         icon: 'success',
@@ -516,102 +530,101 @@ addToCartModal.addEventListener('click', () => {
     modal.style.display = 'none';
 });
 
+const cartModal = document.getElementById("cart-modal");
+const cartBtn = document.getElementById("cart-btn");
+const cartItemsContainer = document.querySelector(".cart-items-container");
+const totalAmount = document.querySelector(".total-amount");
+const checkoutBtn = document.getElementById("checkout-btn");
 
+cartBtn.addEventListener("click", openCartModal);
 
-     const cartModal = document.getElementById("cart-modal");
-    const cartBtn = document.getElementById("cart-btn");
-    const cartItemsContainer = document.querySelector(".cart-items-container");
-    const totalAmount = document.querySelector(".total-amount");
-    const checkoutBtn = document.getElementById("checkout-btn");
+function openCartModal() {
+    updateCartDisplay();
+    handleModalVisibility(cartModal, true);
+}
 
-    cartBtn.addEventListener("click", openCartModal);
-
-    function openCartModal() {
-        updateCartDisplay();
-        handleModalVisibility(cartModal, true);
+function updateCartDisplay() {
+    if (cartItems.length === 0) {
+        cartItemsContainer.innerHTML = '<div class="empty-cart-message">سبد خرید شما خالی است</div>';
+        totalAmount.textContent = '0 تومان';
+        return;
     }
 
-    function updateCartDisplay() {
-        if (cartItems.length === 0) {
-            cartItemsContainer.innerHTML = '<div class="empty-cart-message">سبد خرید شما خالی است</div>';
-            totalAmount.textContent = '0 تومان';
-            return;
-        }
+    let total = 0;
+    cartItemsContainer.innerHTML = cartItems.map((item, index) => {
+        total += item.price * item.quantity;
 
-        let total = 0;
-        cartItemsContainer.innerHTML = cartItems.map((item, index) => {
-            total += item.price * item.quantity;
-            
-            const customizationHtml = Object.entries(item.customization || {})
-                .map(([category, option]) => `${category}: ${option.name}`)
-                .join('، ');
+        const customizationHtml = Object.entries(item.customization || {})
+            .map(([category, option]) => `${category}: ${option.name}`)
+            .join('، ');
 
-            return `
-                <div class="cart-item">
-                    <img src="./assets/img/1.jpg" alt="${item.name}" class="cart-item-image">
-                    <div class="cart-item-details">
-                        <div class="cart-item-title">${item.name}</div>
-                        ${customizationHtml ? `<div class="cart-item-customization">${customizationHtml}</div>` : ''}
-                        <div class="cart-item-price">${(item.price * item.quantity).toLocaleString()} تومان</div>
-                    </div>
-                    <div class="cart-item-controls">
-                        <div class="cart-quantity-control">
-                            <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, -1)">-</button>
-                            <span>${item.quantity}</span>
-                            <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, 1)">+</button>
-                        </div>
-                        <button class="remove-item-btn" onclick="removeCartItem(${index})">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
+        return `
+            <div class="cart-item">
+                <img src="./assets/img/1.jpg" alt="${item.name}" class="cart-item-image">
+                <div class="cart-item-details">
+                    <div class="cart-item-title">${item.name}</div>
+                    ${customizationHtml ? `<div class="cart-item-customization">${customizationHtml}</div>` : ''}
+                    <div class="cart-item-price">${(item.price * item.quantity).toLocaleString()} تومان</div>
                 </div>
-            `;
-        }).join('');
+                <div class="cart-item-controls">
+                    <div class="cart-quantity-control">
+                        <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="cart-quantity-btn" onclick="updateCartItemQuantity(${index}, 1)">+</button>
+                    </div>
+                    <button class="remove-item-btn" onclick="removeCartItem(${index})">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
 
-        totalAmount.textContent = `${total.toLocaleString()} تومان`;
+    totalAmount.textContent = `${total.toLocaleString()} تومان`;
+}
+
+window.updateCartItemQuantity = function(index, change) {
+    const item = cartItems[index];
+    const newQuantity = item.quantity + change;
+
+    if (newQuantity < 1) return;
+
+    item.quantity = newQuantity;
+    updateCartDisplay();
+    cartCount.textContent = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+};
+
+window.removeCartItem = function(index) {
+    cartItems.splice(index, 1);
+    updateCartDisplay();
+    cartCount.textContent = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+    if (cartItems.length === 0) {
+        handleModalVisibility(cartModal, false);
     }
+};
 
-    window.updateCartItemQuantity = function(index, change) {
-        const item = cartItems[index];
-        const newQuantity = item.quantity + change;
-        
-        if (newQuantity < 1) return;
-        
-        item.quantity = newQuantity;
-        updateCartDisplay();
-        cartCount.textContent = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-    }
-
-    window.removeCartItem = function(index) {
-        cartItems.splice(index, 1);
-        updateCartDisplay();
-        cartCount.textContent = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-        
-        if (cartItems.length === 0) {
-            handleModalVisibility(cartModal, false);
-        }
-    }
-
-    checkoutBtn.addEventListener("click", () => {
-        if (cartItems.length === 0) {
-            Toast.fire({
-                icon: 'error',
-                title: 'خطا',
-                text: 'سبد خرید شما خالی است',
-                confirmButtonText: 'باشه'
-            });
-            return;
-        }
-        
+checkoutBtn.addEventListener("click", () => {
+    if (cartItems.length === 0) {
         Toast.fire({
-            icon: 'success',
-            title: 'تکمیل خرید',
-            text: 'سفارش شما با موفقیت ثبت شد',
+            icon: 'error',
+            title: 'خطا',
+            text: 'سبد خرید شما خالی است',
             confirmButtonText: 'باشه'
         });
-        
-        cartItems = [];
-        cartCount.textContent = "0";
-        handleModalVisibility(cartModal, false);
+        return;
+    }
+
+    Toast.fire({
+        icon: 'success',
+        title: 'تکمیل خرید',
+        text: 'سفارش شما با موفقیت ثبت شد',
+        confirmButtonText: 'باشه'
     });
+
+    cartItems = [];
+    cartCount.textContent = "0";
+    handleModalVisibility(cartModal, false);
+});
+
 });
