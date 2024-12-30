@@ -53,68 +53,17 @@
 
     <main>
         <section class="menu-section" id="espresso">
-            <h2>اسپرسو</h2>
-            <div class="menu-items">
-                <div class="menu-item">
-                    <img src="./assets/img/1.jpg" alt="Espresso">
-                    <div class="detail">
-                        <h3>اسپرسو</h3>
-                        <p class="price">10,000 تومان</p>
-                    </div>
-                    <button class="add-to-cart">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                </div>
-            </div>
+
         </section>
 
         <section class="menu-section" id="hot-drinks">
-            <h2>نوشیدنی گرم</h2>
-            <div class="menu-items">
-                <div class="menu-item">
-                    <img src="./assets/img/3.jpg" alt="Hot Drink">
-                    <div class="detail">
-                        <h3>نوشیدنی گرم</h3>
-                        <p class="price">11,000 تومان</p>
-                    </div>
-                    <button class="add-to-cart">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                </div>
-            </div>
+
         </section>
 
         <section class="menu-section" id="cold-drinks">
-            <h2>نوشیدنی سرد</h2>
-            <div class="menu-items">
-                <div class="menu-item">
-                    <img src="./assets/img/2.jpg" alt="Cold Drink">
-                    <div class="detail">
-                        <h3>نوشیدنی سرد</h3>
-                        <p class="price">11,000 تومان</p>
-                    </div>
-                    <button class="add-to-cart">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                </div>
-            </div>
+
         </section>
 
-        <section class="menu-section" id="americano">
-            <h2>یچیزی</h2>
-            <div class="menu-items">
-                <div class="menu-item sold-out">
-                    <img src="./assets/img/5.jpg" alt="Americano">
-                    <div class="detail">
-                        <h3>یچیزی ا</h3>
-                        <p class="price">12,000 تومان</p>
-                    </div>
-                    <button class="add-to-cart">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                </div>
-            </div>
-        </section>
     </main>
 
     <div id="login-modal" class="modal auth-modal">
@@ -162,7 +111,7 @@
                 <h2>تکمیل اطلاعات کاربری</h2>
                 <p>لطفاً اطلاعات خود را تکمیل کنید</p>
             </div>
-            <form id="profile-completion-form" class="auth-form">
+            <form id="profile-completion-form">
                 <div class="form-group">
                     <label for="full-name">نام و نام خانوادگی</label>
                     <div class="input-wrapper">
@@ -184,7 +133,7 @@
                         <input type="date" id="birth-date" name="birthDate" required>
                     </div>
                 </div>
-                <button type="submit" class="auth-btn">ذخیره اطلاعات</button>
+                <button type="button" class="auth-btn" id="signup-next-btn">ذخیره اطلاعات</button>
             </form>
         </div>
     </div>

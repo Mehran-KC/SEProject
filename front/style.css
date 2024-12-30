@@ -1,7 +1,7 @@
 /* Font Import */
 @font-face {
   font-family: IranSans;
-  src: url(/assets/fonts/IRANSans\(FaNum\).ttf);
+  src: url(./assets/fonts/IRANSans\(FaNum\).ttf)
 }
 
 /* Reset and Base Styles */
@@ -536,6 +536,15 @@ nav #nav-start a:hover {
 
 #login-btn:hover {
   background-color: #d4edda;
+}
+
+#logout-btn {
+  border: 2px solid #a72833 !important;
+  color: #a72833 !important;
+}
+
+#logout-btn:hover {
+  background-color: #ea0a0a;
 }
 
 .auth-modal {
